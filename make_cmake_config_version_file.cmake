@@ -1,14 +1,14 @@
 function(make_cmake_config_version_file)
     message(VERBOSE "ENTERING: make_cmake_config_version_file()...")
-    set(options)
-    set(args)
-    set(list_args)
+    set(options "")
+    set(args "")
+    set(list_args "")
     cmake_parse_arguments(
-            PARSE_ARGV 0
-            CV
-            ${options}
-            ${args}
-            ${list_args}
+            PARSE_ARGV 0    # Parsing mode and variable skip.
+            "CV"            # Variable name prefix.
+            "${options}"    # Known function options.
+            "${args}"       # One value arguments.
+            "${list_args}"  # Multivalued arguments.
     )
     foreach(arg IN LISTS CV_UNPARSED_ARGUMENTS)
         message(WARNING "Unknown argument: ${arg}")
