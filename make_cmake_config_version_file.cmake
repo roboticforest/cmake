@@ -1,5 +1,18 @@
 function(make_cmake_config_version_file)
-    message("CALLED!")
+    message(VERBOSE "ENTERING: make_cmake_config_version_file()...")
+    set(options)
+    set(args)
+    set(list_args)
+    cmake_parse_arguments(
+            PARSE_ARGV 0
+            CV
+            ${options}
+            ${args}
+            ${list_args}
+    )
+    foreach(arg IN LISTS CV_UNPARSED_ARGUMENTS)
+        message(WARNING "Unknown argument: ${arg}")
+    endforeach()
 endfunction()
 
 
