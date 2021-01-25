@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.19.3)
+
 # The following notes were taken from the CMake 3.16 documentation and are useful to have on hand here.
 
 # INPUT variables supplied to the version file when find_package() loads it.
@@ -53,7 +55,9 @@ function(make_cmake_config_version_file)
     # Allow for relative paths and/or account for missing PATH argument.
     if (CV_PATH)
         message(VERBOSE "File creation path set to: \"${CV_PATH}\"")
-        set(CV_INSTALL_PATH "${CV_PATH}/")
+        file(REAL_PATH "${CV_PATH}" CV_INSTALL_PATH)
+        message(VERBOSE "File creation path resolved to: \"${CV_INSTALL_PATH}\"")
+        set(CV_INSTALL_PATH "${CV_INSTALL_PATH}/")
     else ()
         message(VERBOSE "No destination file creation path given. The default path is the project binary directory.")
         message(VERBOSE "Using \"${PROJECT_BINARY_DIR}\".")
