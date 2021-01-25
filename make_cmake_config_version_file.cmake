@@ -38,66 +38,69 @@ function(make_cmake_config_version_file)
             "${list_args}"  # Multivalued arguments.
     )
 
-    message(VERBOSE "Path set to: ${CV_PATH}")
-    message(VERBOSE "Name set to: ${CV_NAME}")
-    message(VERBOSE "Version: ${CV_VERSION}")
+    if (NOT CV_NAME)
+        message(FATAL_ERROR "A \"NAME\" parameter must be specified. Typically this is the name of the project and it will be used as the prefix in the config version file's name as \"<name>-config-version.cmake\".")
+    else ()
+        message(VERBOSE "Using name \"${CV_NAME}\" for config version file prefix.")
+    endif ()
 
-    if(NOT CV_NAME)
-        message(ERROR "A NAME parameter must be specified. This is typically the project name and will be prefix
-         the file name as \"<name>-config-version.cmake\".")
-    endif()
-
-    if(NOT CV_VERSION)
-        message(ERROR "A version number must be supplied which can be written to the version file.")
-    endif()
-
-    foreach(arg IN LISTS CV_UNPARSED_ARGUMENTS)
-        message(WARNING "Unknown argument: ${arg}")
-    endforeach()
+    if (NOT CV_VERSION)
+        message(FATAL_ERROR "A version number must be supplied which can be written in to the version file.")
+    else ()
+        message(VERBOSE "\"${CV_NAME}\" version set to \"${CV_VERSION}\"")
+    endif ()
 
     # Allow for relative paths and/or account for missing PATH argument.
-    if(CV_PATH)
+    if (CV_PATH)
+        message(VERBOSE "File creation path set to: \"${CV_PATH}\"")
         set(CV_INSTALL_PATH "${CV_PATH}/")
-    else()
-        set(CV_INSTALL_PATH "")
-    endif()
+    else ()
+        message(VERBOSE "No destination file creation path given. The default path is the project binary directory.")
+        message(VERBOSE "Using \"${PROJECT_BINARY_DIR}\".")
+        set(CV_INSTALL_PATH "${PROJECT_BINARY_DIR}/")
+    endif ()
 
+    foreach (arg IN LISTS CV_UNPARSED_ARGUMENTS)
+        message(WARNING "Unknown argument: ${arg}")
+    endforeach ()
+
+    message(STATUS "Generating \"${CV_NAME}-config-version.cmake\" for version \"${CV_VERSION}\" of \"${CV_NAME}\".")
     file(WRITE "${CV_INSTALL_PATH}${CV_NAME}-config-version.cmake"
-        "message(VERBOSE \"ENTERING: ${CV_NAME}-config-version.cmake file.\")\n"
-        "\n"
-        "set(PACKAGE_VERSION \"${CV_VERSION}\")\n"
-        "\n"
-        "\# Backwards compatibility with previous minor iterations is assumed, but not for newer\n"
-        "\# iterations. Nor is any compatibility assumed for any other major versions.\n"
-        "\# Compatibility with previous patches and insignificant tweaks is also assumed.\n"
-        "if(PACKAGE_VERSION VERSION_LESS PACKAGE_FIND_VERSION)\n"
-        "    set(PACKAGE_VERSION_COMPATIBLE FALSE)\n"
-        "else()\n"
-        "    if(\"${CV_VERSION}\" MATCHES \"^([0-9]+)\\\\.\")\n"
-        "        set(CV_VERSION_MAJOR_COMPONENT \"\${CMAKE_MATCH_1}\")\n"
-        "    else()\n"
-        "        set(CV_VERSION_MAJOR_COMPONENT \"${CV_VERSION}\")\n"
-        "    endif()\n"
-        "\n"
-        "    if(PACKAGE_FIND_VERSION_MAJOR STREQUAL CV_VERSION_MAJOR_COMPONENT)\n"
-        "        set(PACKAGE_VERSION_COMPATIBLE TRUE)\n"
-        "    else()\n"
-        "        set(PACKAGE_VERSION_COMPATIBLE FALSE)\n"
-        "    endif()\n"
-        "\n"
-        "    if(PACKAGE_FIND_VERSION STREQUAL PACKAGE_VERSION)\n"
-        "        set(PACKAGE_VERSION_EXACT TRUE)\n"
-        "    endif()\n"
-        "endif()\n"
-        "\n"
-        "if(PACKAGE_VERSION_COMPATIBLE)\n"
-        "    message(VERBOSE \"Installed package (\${PACKAGE_VERSION}) is compatible with requested version (\${PACKAGE_FIND_VERSION}).\")\n"
-        "    if(PACKAGE_VERSION_EXACT)\n"
-        "        message(VERBOSE \"Package versions match exactly.\")\n"
-        "    endif()\n"
-        "endif()\n"
-        "message(VERBOSE \"EXITING: ${CV_NAME}-config-version.cmake file.\")\n"
-    )
+            "message(VERBOSE \"ENTERING: ${CV_NAME}-config-version.cmake file.\")\n"
+            "\n"
+            "set(PACKAGE_VERSION \"${CV_VERSION}\")\n"
+            "\n"
+            "\# Backwards compatibility with previous minor iterations is assumed, but not for newer\n"
+            "\# iterations. Nor is any compatibility assumed for any other major versions.\n"
+            "\# Compatibility with previous patches and insignificant tweaks is also assumed.\n"
+            "if(PACKAGE_VERSION VERSION_LESS PACKAGE_FIND_VERSION)\n"
+            "    set(PACKAGE_VERSION_COMPATIBLE FALSE)\n"
+            "else()\n"
+            "    if(\"${CV_VERSION}\" MATCHES \"^([0-9]+)\\\\.\")\n"
+            "        set(CV_VERSION_MAJOR_COMPONENT \"\${CMAKE_MATCH_1}\")\n"
+            "    else()\n"
+            "        set(CV_VERSION_MAJOR_COMPONENT \"${CV_VERSION}\")\n"
+            "    endif()\n"
+            "\n"
+            "    if(PACKAGE_FIND_VERSION_MAJOR STREQUAL CV_VERSION_MAJOR_COMPONENT)\n"
+            "        set(PACKAGE_VERSION_COMPATIBLE TRUE)\n"
+            "    else()\n"
+            "        set(PACKAGE_VERSION_COMPATIBLE FALSE)\n"
+            "    endif()\n"
+            "\n"
+            "    if(PACKAGE_FIND_VERSION STREQUAL PACKAGE_VERSION)\n"
+            "        set(PACKAGE_VERSION_EXACT TRUE)\n"
+            "    endif()\n"
+            "endif()\n"
+            "\n"
+            "if(PACKAGE_VERSION_COMPATIBLE)\n"
+            "    message(VERBOSE \"Installed package (\${PACKAGE_VERSION}) is compatible with requested version (\${PACKAGE_FIND_VERSION}).\")\n"
+            "    if(PACKAGE_VERSION_EXACT)\n"
+            "        message(VERBOSE \"Package versions match exactly.\")\n"
+            "    endif()\n"
+            "endif()\n"
+            "message(VERBOSE \"EXITING: ${CV_NAME}-config-version.cmake file.\")\n"
+            )
 
     message(VERBOSE "EXITING: make_cmake_config_version_file().")
 endfunction()
