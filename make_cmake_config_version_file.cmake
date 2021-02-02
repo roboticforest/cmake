@@ -68,9 +68,10 @@ function(make_cmake_config_version_file)
         message(WARNING "Unknown argument: ${arg}")
     endforeach ()
 
-    message(STATUS "Generating \"${CV_NAME}-config-version.cmake\" for version \"${CV_VERSION}\" of \"${CV_NAME}\".")
-    file(WRITE "${CV_INSTALL_PATH}${CV_NAME}-config-version.cmake"
-            "message(VERBOSE \"ENTERING: ${CV_NAME}-config-version.cmake file.\")\n"
+    string(TOLOWER "${CV_NAME}" CV_FILENAME)
+    message(STATUS "Generating \"${CV_FILENAME}-config-version.cmake\" for version \"${CV_VERSION}\" of \"${CV_NAME}\".")
+    file(WRITE "${CV_INSTALL_PATH}${CV_FILENAME}-config-version.cmake"
+            "message(VERBOSE \"ENTERING: ${CV_FILENAME}-config-version.cmake file.\")\n"
             "\n"
             "set(PACKAGE_VERSION \"${CV_VERSION}\")\n"
             "\n"
@@ -103,7 +104,7 @@ function(make_cmake_config_version_file)
             "        message(VERBOSE \"Package versions match exactly.\")\n"
             "    endif()\n"
             "endif()\n"
-            "message(VERBOSE \"EXITING: ${CV_NAME}-config-version.cmake file.\")\n"
+            "message(VERBOSE \"EXITING: ${CV_FILENAME}-config-version.cmake file.\")\n"
             )
 
     message(VERBOSE "EXITING: make_cmake_config_version_file().")

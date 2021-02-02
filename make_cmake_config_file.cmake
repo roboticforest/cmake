@@ -35,21 +35,22 @@ function(make_cmake_config_file)
         message(WARNING "Unknown argument: ${arg}")
     endforeach ()
 
-    message(STATUS "Generating \"${CONF_NAME}-config.cmake\".")
-    set(outfile "${CONF_INSTALL_PATH}/${CONF_NAME}-config.cmake")
-    file(WRITE "${outfile}" "message(VERBOSE \"ENTERING: ${CONF_NAME}-config.cmake file.\")\n")
+    string(TOLOWER "${CONF_NAME}" CONF_FILENAME)
+    message(STATUS "Generating \"${CONF_FILENAME}-config.cmake\".")
+    set(outfile "${CONF_INSTALL_PATH}/${CONF_FILENAME}-config.cmake")
+    file(WRITE "${outfile}" "message(VERBOSE \"ENTERING: ${CONF_FILENAME}-config.cmake file.\")\n")
 
     foreach (define IN LISTS CONF_DEFINES)
         file(APPEND "${outfile}" "add_compile_definitions(${define})\n")
     endforeach ()
 
     foreach (setting IN LISTS CONF_SETTINGS)
-        string(REGEX MATCH "^[^=]+" var_name ${setting})                # Get the variable name.
-        string(REPLACE "${var_name}=" "" var_value ${setting})              # Get the value.
-        file(APPEND "${outfile}" "set(${CONF_VAR_PREFIX}_${var_name} ${var_value})\n")    # Create the set variable command.
+        string(REGEX MATCH "^[^=]+" var_name ${setting})                                # Get the variable name.
+        string(REPLACE "${var_name}=" "" var_value ${setting})                          # Get the value.
+        file(APPEND "${outfile}" "set(${CONF_VAR_PREFIX}_${var_name} ${var_value})\n")  # Create the set variable command.
     endforeach ()
 
-    file(APPEND "${outfile}" "message(VERBOSE \"EXITING: ${CONF_NAME}-config.cmake file.\")\n")
+    file(APPEND "${outfile}" "message(VERBOSE \"EXITING: ${CONF_FILENAME}-config.cmake file.\")\n")
 
     message(VERBOSE "EXITING: make_cmake_config_file().")
 endfunction()
