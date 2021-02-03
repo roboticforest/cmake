@@ -44,10 +44,32 @@ function(make_cmake_config_file)
         file(APPEND "${outfile}" "add_compile_definitions(${define})\n")
     endforeach ()
 
+    set(incomplete_setting FALSE)
     foreach (setting IN LISTS CONF_SETTINGS)
-        string(REGEX MATCH "^[^=]+" var_name ${setting})                                # Get the variable name.
-        string(REPLACE "${var_name}=" "" var_value ${setting})                          # Get the value.
-        file(APPEND "${outfile}" "set(${CONF_VAR_PREFIX}_${var_name} ${var_value})\n")  # Create the set variable command.
+
+        if (NOT incomplete_setting)
+            string(REGEX MATCH "^[^=]+" var_name "${setting}") # Get the setting's name.
+            string(REPLACE "${var_name}=" "" var_value "${setting}")# Get the setting's value.
+        endif ()
+
+        # Check that the var="something" pattern was not broken by the foreach loop splitting lists.
+        # This happens when var="some;sort;of;list" is passed in.
+        string(REGEX MATCH ".*\"\$" matching_quote "${setting}")
+        if (NOT matching_quote AND NOT incomplete_setting)
+            set(incomplete_setting TRUE)
+            continue()
+        elseif (NOT matching_quote AND incomplete_setting)
+            string(APPEND var_value ";${setting}")
+            continue()
+        elseif (matching_quote AND incomplete_setting)
+            string(APPEND var_value ";${setting}")
+            set(incomplete_setting FALSE)
+        endif ()
+
+        if (NOT incomplete_setting)
+            # Create the set variable command.
+            file(APPEND "${outfile}" "set(${CONF_VAR_PREFIX}_${var_name} ${var_value})\n")
+        endif ()
     endforeach ()
 
     file(APPEND "${outfile}" "message(VERBOSE \"EXITING: ${CONF_FILENAME}-config.cmake file.\")\n")
