@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.19.3)
 function(make_cmake_config_file)
     message(VERBOSE "ENTERING: make_cmake_config_file().")
     set(options "")         # UNUSED
-    set(args NAME PATH VAR_PREFIX)
+    set(args NAME PATH VAR_PREFIX LIB_NAME)
     set(list_args DEFINES SETTINGS)
     cmake_parse_arguments(
             PARSE_ARGV 0    # Parsing mode and variable skip.
@@ -71,6 +71,36 @@ function(make_cmake_config_file)
             file(APPEND "${outfile}" "set(${CONF_VAR_PREFIX}_${var_name} ${var_value})\n")
         endif ()
     endforeach ()
+
+    if (CONF_LIB_NAME)
+        message(VERBOSE "Generating a find_library command.")
+
+        string(TOLOWER "${CONF_NAME}" lo_name)
+        string(TOUPPER "${CONF_NAME}" up_name)
+        string(TOLOWER "${CONF_LIB_NAME}" lo_lib_name)
+        string(TOUPPER "${CONF_LIB_NAME}" up_lib_name)
+
+        file(APPEND "${outfile}"
+           "find_library(${CONF_VAR_PREFIX}_LIBRARIES\n \
+            NAMES ${lo_lib_name} ${up_lib_name} ${lo_name} ${up_name}\n \
+            PATHS\n \
+                \${PROJECT_SOURCE_DIR}\n \
+                \${PROJECT_SOURCE_DIR}/lib\n \
+                \${PROJECT_SOURCE_DIR}/vendor\n \
+            PATH_SUFFIXES\n \
+                ${lo_name}\n \
+                ${up_name}\n \
+                ${lo_name}/lib\n \
+                ${up_name}/lib\n \
+                ${lo_lib_name}\n \
+                ${up_lib_name}\n \
+                ${lo_lib_name}/lib\n \
+                ${up_lib_name}/lib\n \
+            REQUIRED\n \
+            )\n"
+            )
+    endif ()
+
 
     file(APPEND "${outfile}" "message(VERBOSE \"EXITING: ${CONF_FILENAME}-config.cmake file.\")\n")
 
