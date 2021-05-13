@@ -1,3 +1,8 @@
+####################################################################################################
+# All rights reserved © 2019-2021 David Vitez (AKA: Robotic Forest)
+# This software is the private intellectual property of David Vitez unless otherwise stated.
+####################################################################################################
+
 cmake_minimum_required(VERSION 3.19.3)
 
 # The following notes were taken from the CMake 3.16 documentation and are useful to have on hand here.

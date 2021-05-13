@@ -1,3 +1,8 @@
+####################################################################################################
+# All rights reserved © 2019-2021 David Vitez (AKA: Robotic Forest)
+# This software is the private intellectual property of David Vitez unless otherwise stated.
+####################################################################################################
+
 cmake_minimum_required(VERSION 3.19.3)
 
 function(make_cpp_version_header)
