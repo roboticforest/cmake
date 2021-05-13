@@ -60,7 +60,7 @@ function(make_cpp_version_header)
 
     file(APPEND "${outfile}"
             "/// The complete four part version number as a string literal.\n"
-            "#define ${ALL_CAPS_HEADER_NAME}_version_listING \"${HEADER_VERSION}\"\n"
+            "#define ${ALL_CAPS_HEADER_NAME}_VERSION_STRING \"${HEADER_VERSION}\"\n"
             )
 
     # Convert the version string into a list of version string components.
